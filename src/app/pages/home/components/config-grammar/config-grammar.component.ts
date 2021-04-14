@@ -23,29 +23,29 @@ export class ConfigGrammarComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  openModal(template: TemplateRef<any>): void {
-    // Show the modal
-    this.modalRef = this.modalService.show(template);
-  }
+  // openModal(template: TemplateRef<any>): void {
+  //   // Show the modal
+  //   this.modalRef = this.modalService.show(template);
+  // }
 
-  hideModal(): void {
-    this.modalRef.hide();
-  }
+  // hideModal(): void {
+  //   this.modalRef.hide();
+  // }
 
-  saveGrammar(): void {
-    const grammar = this.grammarService.getGrammar();
-    this.hideModal();
-    this.calculationsService.setGrammar(grammar);
-    this.calculationsService.calculateNull();
-    this.calculationsService.calculateFirst();
-    this.calculationsService.calculateFollow();
-    this.calculationsService.calculateLLTable();
-    this.grammarService.setGrammar(new Grammar());
-  }
+  // saveGrammar(): void {
+  //   const grammar = this.grammarService.getGrammar();
+  //   this.hideModal();
+  //   this.calculationsService.setGrammar(grammar);
+  //   this.calculationsService.calculateNull();
+  //   this.calculationsService.calculateFirst();
+  //   this.calculationsService.calculateFollow();
+  //   this.calculationsService.calculateLLTable();
+  //   this.grammarService.setGrammar(new Grammar());
+  // }
 
-  parse(input: string): void {
-    this.grammarService.parse(input);
-  }
+  // parse(input: string): void {
+  //   this.grammarService.parse(input);
+  // }
 
   
 }

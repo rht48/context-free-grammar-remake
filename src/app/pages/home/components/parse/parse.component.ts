@@ -16,17 +16,17 @@ export class ParseComponent implements OnInit {
   steps: string = '';
 
   ngOnInit(): void {
-    this.parse('eof');
+    // this.parse('eof');
   }
 
-  parse(input: string) {
-    this.parseService.parse(input);
-  }
+  // parse(input: string) {
+  //   this.parseService.parse(input);
+  // }
 
-  verify(): void {
-    this.parseService.verify(this.calculationsService.getLLTable(), this.calculationsService.getGrammar());
-    this.stack = this.parseService.getStringStack();
-    this.steps = this.parseService.getStringSteps();
-  }
+  // verify(): void {
+  //   this.parseService.verify(this.calculationsService.getLLTable(), this.calculationsService.getGrammar());
+  //   this.stack = this.parseService.getStringStack();
+  //   this.steps = this.parseService.getStringSteps();
+  // }
 
 }
