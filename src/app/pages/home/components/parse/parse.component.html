@@ -1,0 +1,22 @@
+<h1>Testing</h1>
+<div class="container">
+    <div class="row justify-content-center mb-5">
+        <h5><i><b>{{ parseService.getParsed() }}</b></i></h5>
+    </div>
+    <div class="row justify-content-center mb-5">
+        <textarea class="form-control col-10" (input)="parse($event.target.value)"></textarea>
+        <button class="btn btn-success col-2" (click)="verify()">Verify</button>
+    </div>
+    <div class="row">
+        <h5>Results: </h5>
+    </div>
+    <div class="row">
+        <h5 [innerHTML]="steps"></h5>
+    </div>
+    <div class="row">
+        <h5 [innerHTML]="stack"></h5>
+    </div>
+</div>
+<div class="container row justify-content-center">
+    <app-tree [graph]="parseService.graph"></app-tree>
+</div>
