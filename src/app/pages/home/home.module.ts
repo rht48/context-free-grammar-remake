@@ -12,6 +12,10 @@ import { CalcGrammarComponent } from './components/calc-grammar/calc-grammar.com
 import { TableComponent } from './components/table/table.component';
 import { ParseComponent } from './components/parse/parse.component';
 import { TreeComponent } from './components/tree/tree.component';
+import { NonTerminalsComponent } from './components/non-terminals/non-terminals.component';
+import { TermsComponent } from './components/terms/terms.component';
+import { RulesComponent } from './components/rules/rules.component';
+import { NumberedRulesComponent } from './components/numbered-rules/numbered-rules.component';
 
 @NgModule({
   imports: [
@@ -29,7 +33,11 @@ import { TreeComponent } from './components/tree/tree.component';
     CalcGrammarComponent,
     TableComponent,
     ParseComponent,
-    TreeComponent
+    TreeComponent,
+    NonTerminalsComponent,
+    TermsComponent,
+    RulesComponent,
+    NumberedRulesComponent
   ]
 })
 export class HomeModule {

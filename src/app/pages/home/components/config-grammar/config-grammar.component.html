@@ -1,0 +1,16 @@
+<div class="d-flex flex-row justify-content-around mt-5">
+    <div class="p-2">
+        <label for="textAreaGrammar"><h5>Grammar, ε is {{ grammar.epsilon() }}, eof is {{ grammar.eof() }}</h5></label>
+        <textarea id="textAreaGrammar" class="form-control" rows="10" cols="50" (input)="parse($event.target.value)"></textarea>
+    </div>
+    <div class="p-2">
+        <app-non-terminals [grammar]="grammar"></app-non-terminals>
+        <app-terms [grammar]="grammar"></app-terms>
+    </div>
+    <div class="p-2">
+        <app-rules [grammar]="grammar"></app-rules>
+    </div>
+    <div class="p-2">
+        <app-numbered-rules [grammar]="grammar"></app-numbered-rules>
+    </div>
+</div>
