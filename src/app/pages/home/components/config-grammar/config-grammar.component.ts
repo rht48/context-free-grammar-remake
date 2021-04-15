@@ -24,17 +24,27 @@ export class ConfigGrammarComponent implements OnInit {
   }
 
   public parse(input: string): void {
+    // Split all the lines
     const lines = input.split('\n');
+
+    // Start numbering ids at 1
     let id = 1;
     let rules = {};
     let entryPoint: string;
+
+    // Read all the lines
     for(const line of lines) {
+      // Separate terms from non terminal
       const separated = line.split(' -> ');
       if(separated.length === 2) {
         const nonTerminal = separated[0];
+
+        // The entrypoint is the first non terminal of the list
         if(id === 1) {
           entryPoint = nonTerminal;
         }
+
+        // Get all the productions and add them to the list of rules
         const productions = separated[1].split(' | ');
         for(const p of productions) {
           const terms = p.split(' ');
@@ -46,33 +56,6 @@ export class ConfigGrammarComponent implements OnInit {
         }
       }
     }
-    // this.grammar.setRules(rules, entryPoint);
     this.grammar = new Grammar(rules, entryPoint);
   }
-
-  // openModal(template: TemplateRef<any>): void {
-  //   // Show the modal
-  //   this.modalRef = this.modalService.show(template);
-  // }
-
-  // hideModal(): void {
-  //   this.modalRef.hide();
-  // }
-
-  // saveGrammar(): void {
-  //   const grammar = this.grammarService.getGrammar();
-  //   this.hideModal();
-  //   this.calculationsService.setGrammar(grammar);
-  //   this.calculationsService.calculateNull();
-  //   this.calculationsService.calculateFirst();
-  //   this.calculationsService.calculateFollow();
-  //   this.calculationsService.calculateLLTable();
-  //   this.grammarService.setGrammar(new Grammar());
-  // }
-
-  // parse(input: string): void {
-  //   this.grammarService.parse(input);
-  // }
-
-  
 }
