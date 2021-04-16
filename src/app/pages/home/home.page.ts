@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { Grammar } from 'src/app/models/grammar';
 
 @Component({
   selector: 'home-page',
@@ -7,7 +8,15 @@ import { Component, OnInit } from '@angular/core';
 })
 export class HomePage implements OnInit {
 
-  constructor() { }
+  public grammar: Grammar;
+
+  constructor() { 
+    this.grammar = new Grammar({}, '');
+   }
 
   ngOnInit(): void { }
+
+  public setGrammar(grammar: Grammar): void {
+    this.grammar = grammar;
+  }
 }

@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { ArrayStrategy, NumberStrategy } from 'src/app/models/strategies/strategy';
-import { CalculationsService } from '../../services/calculations.service';
-import { ShowGrammarService } from '../../services/show-grammar.service';
+import { Component, Input, OnInit } from '@angular/core';
+import { Grammar } from 'src/app/models/grammar';
+
 
 @Component({
   selector: 'app-calc-grammar',
@@ -10,21 +9,22 @@ import { ShowGrammarService } from '../../services/show-grammar.service';
 })
 export class CalcGrammarComponent implements OnInit {
 
-  customClass='custom-accordion-style';
+  @Input()
+  public grammar: Grammar = undefined;
 
-  constructor(public showGrammarService: ShowGrammarService,
-              public calculationsService: CalculationsService) { }
+  public state = 0;
 
-  ngOnInit(): void {
+  constructor() { }
 
+  ngOnInit(): void {}
+
+  public calculateLL(): void {
+    this.state = 1;
   }
 
-  getArrayStrategy() {
-    return new ArrayStrategy();
+  public calculateLR(): void {
+    this.state = 2;
   }
 
-  getNumberStrategy() {
-    return new NumberStrategy();
-  }
 
 }

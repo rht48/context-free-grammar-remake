@@ -1,6 +1,10 @@
 <h1>Context Free Grammar</h1>
 
-<app-config-grammar></app-config-grammar>
+<app-config-grammar (grammarEmitter)="setGrammar($event)"></app-config-grammar>
+
+<hr>
+
+<app-calc-grammar [grammar]="grammar"></app-calc-grammar>
 
 <div style="margin-bottom: 10em;"></div>
 

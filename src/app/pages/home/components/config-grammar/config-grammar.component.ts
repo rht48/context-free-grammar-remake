@@ -1,4 +1,4 @@
-import { Component, OnInit, Output, Pipe, TemplateRef } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output, Pipe, TemplateRef } from '@angular/core';
 import { BsModalRef, BsModalService } from 'ngx-bootstrap/modal';
 import { Grammar, Production } from 'src/app/models/grammar';
 import { CalculationsService } from '../../services/calculations.service';
@@ -12,7 +12,10 @@ import { ShowGrammarService } from '../../services/show-grammar.service';
 })
 export class ConfigGrammarComponent implements OnInit {
 
-  @Output() public grammar: Grammar;
+  public grammar: Grammar;
+
+  @Output()
+  public grammarEmitter = new EventEmitter<Grammar>();
 
   constructor(public modalService: BsModalService,
               public grammarService: GrammarService,
@@ -57,5 +60,6 @@ export class ConfigGrammarComponent implements OnInit {
       }
     }
     this.grammar = new Grammar(rules, entryPoint);
+    this.grammarEmitter.emit(this.grammar);
   }
 }
