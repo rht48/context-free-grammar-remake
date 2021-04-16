@@ -1,6 +1,33 @@
-<div>
+<div class="container">
     <tabset>
-        <tab heading="Tables" id="tab1">Tables</tab>
+        <tab heading="Tables" id="tab1">
+            <accordion [isAnimated]="true" class="mt-3">
+                <accordion-group>
+                    <span accordion-heading class='custom-accordion-style'>
+                        <h4>Null Table</h4>
+                    </span>
+                    <div class="container">
+                        <app-table [table]="calcLlService.getNullTable()"></app-table>
+                    </div>
+                </accordion-group>
+                <accordion-group>
+                    <span accordion-heading class='custom-accordion-style'>
+                        <h4>First Table</h4>
+                    </span>
+                    <div class="container">
+                        <app-table [table]="calcLlService.getFirstTable()" [strategy]="getArrayStrategy()"></app-table>
+                    </div>
+                </accordion-group>
+                <accordion-group>
+                    <span accordion-heading class='custom-accordion-style'>
+                        <h4>Follow Table</h4>
+                    </span>
+                    <div class="container">
+                        <app-table [table]="calcLlService.getFollowTable()"></app-table>
+                    </div>
+                </accordion-group>
+            </accordion>
+        </tab>
         <tab heading="Testing">Testing</tab>
     </tabset>
 </div>

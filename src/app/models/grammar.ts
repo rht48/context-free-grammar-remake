@@ -73,6 +73,10 @@ export class Grammar {
         return Grammar.EOF;
     }
 
+    public isNonTerminal(term: string): boolean {
+        return this.nonTerminals.indexOf(term) >= 0;
+    }
+
 }
 
 

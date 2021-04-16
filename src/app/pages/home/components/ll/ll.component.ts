@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { ArrayStrategy, NumberStrategy } from 'src/app/models/strategies/strategy';
+import { CalcLlService } from '../../services/calc-ll.service';
 
 @Component({
   selector: 'app-ll',
@@ -7,9 +9,17 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LlComponent implements OnInit {
 
-  constructor() { }
+  constructor(public calcLlService: CalcLlService) { }
 
   ngOnInit(): void {
+  }
+
+  getArrayStrategy() {
+    return new ArrayStrategy();
+  }
+
+  getNumberStrategy() {
+    return new NumberStrategy();
   }
 
 }

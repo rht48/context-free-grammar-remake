@@ -8,7 +8,7 @@ import { DefaultStrategy, Strategy } from 'src/app/models/strategies/strategy';
 })
 export class TableComponent implements OnInit {
 
-  @Input() table = {}
+  @Input() table = {};
   @Input() strategy: Strategy = new DefaultStrategy();
   @Input() type = 'simple';
 
@@ -17,18 +17,18 @@ export class TableComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  keys() {
+  public keys(): any[] {
     return Object.keys(this.table);
   }
 
-  length(): number {
+  public length(): number {
     if(this.keys().length === 0) {
       return 0;
     }
     return this.table[this.keys()[0]].length;
   }
 
-  range(): number[] {
+  public range(): number[] {
     let arr = [];
     const len = this.length();
     for(let i = 0; i < len; i++) {
@@ -37,7 +37,7 @@ export class TableComponent implements OnInit {
     return arr;
   }
 
-  nonterminals(): string[] {
+  public nonterminals(): string[] {
     if(this.type === 'simple') {
       return this.keys();
     }
