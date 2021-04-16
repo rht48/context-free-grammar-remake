@@ -6,3 +6,6 @@
         <button class="btn btn-success" (click)="calculateLR()">Show LR(1) table</button>
     </div>
 </div>
+
+<app-ll *ngIf="state === 1"></app-ll>
+<app-lr *ngIf="state === 2"></app-lr>
