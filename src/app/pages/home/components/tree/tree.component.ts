@@ -17,7 +17,7 @@ export class TreeComponent implements OnInit {
   } 
   _graph: string = 'graph TB;';
 
-  @ViewChild('mermaid')
+  @ViewChild('mermaidId')
   public mermaidDiv;
 
   constructor(public parseService: ParseService, 
@@ -32,7 +32,7 @@ export class TreeComponent implements OnInit {
   public updateGraph(): void {
     if(this._graph !== 'graph TB;') {
       const element = this.mermaidDiv.nativeElement;
-      mermaid.render('gaphDiv', this._graph, (svgCode, bindFunction) => {
+      mermaid.render('graphDiv', this._graph, (svgCode, bindFunction) => {
         element.innerHTML = svgCode;
       });
     }

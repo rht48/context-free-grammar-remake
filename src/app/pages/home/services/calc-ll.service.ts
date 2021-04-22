@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { BrowserStack } from 'protractor/built/driverProviders';
 import { Grammar } from 'src/app/models/grammar';
+import { Node } from 'src/app/models/node';
 
 @Injectable({
   providedIn: 'root'
@@ -19,6 +21,8 @@ export class CalcLlService {
 
   private predictionTable = {};
 
+  private grammar: Grammar;
+
 
   constructor() { }
 
@@ -27,6 +31,7 @@ export class CalcLlService {
     this.calculateFirst(grammar);
     this.calculateFollow(grammar);
     this.calculatePredict(grammar);
+    this.grammar = grammar;
   }
 
   public getNullTable(): {} {
@@ -338,6 +343,138 @@ export class CalcLlService {
     }
 
     return res;
+  }
+
+
+  public getGraph(input: string[]): Node[] {
+    let index = 0;
+    let graph = [];
+    let id = 0;
+    const entry = new Node(undefined, id++, this.grammar.getEntryPoint());
+    graph.push(entry);
+    let stack = [entry];
+    // continue until we arrive at the end
+    while(index < input.length) {
+      const term = input[index];
+      const first = stack.pop();
+
+      if(first === undefined) {
+        if(term !== Grammar.EOF) {
+          graph.push(new Node(undefined, id++, "Error language"));
+          return graph;
+        }
+        index ++;
+      }else {
+
+        // Check if the first element is a non terminal
+        if(!this.grammar.isNonTerminal(first.text)) {
+          // If the first elment of the statck is the same as the input
+          // Then move to the next element
+          // Else, it does not belong to the same language
+          if(first.text === term) {
+            // graph.push(new Node(first, id++, term));
+            index ++;
+          }else {
+            graph.push(new Node(first, id++, "Error language"));
+            return graph;
+          }
+        }else {
+
+          // check if the term exists in the table
+          if(Object.keys(this.predictionTable).indexOf(term) < 0) {
+            graph.push(new Node(first, id++, "Term Not Found"));
+            return graph;
+          }
+
+          const ruleIds = this.predictionTable[term][first.text];
+          // Check if there is a rule, if not return
+          if(ruleIds.length === 0) {
+            graph.push(new Node(first, id++, "Error language"));
+            return graph;
+          }
+
+          // check if there are multiple rules, if so, not ll(1)
+          if(ruleIds.length >= 2) {
+            graph.push(new Node(first, id++, "Multiple paths"));
+            return graph;
+          }
+          // Get the production and add it to the stack
+          const production = this.grammar.getRuleById(ruleIds[0]);
+          const terms = production.getTerms();
+          const finalId = terms.length + id;
+          for(let i = terms.length - 1; i >= 0; i--) {
+            const ident = id++;
+            const node1 = new Node(first, ident, terms[i]);
+            const node2 = new Node(first, finalId - (terms.length - i), terms[terms.length - i - 1]);
+            graph.push(node2)
+            if(terms[i] !== Grammar.EPSILON) {
+              stack.push(node1);
+            }
+          }
+        }
+      }
+    }
+    return graph;
+  }
+
+  /**
+   * Transforms the graph into mermaid syntax
+   * @param graph 
+   */
+  public getTree(graph: Node[]): string {
+    let res = 'graph TB;\n';
+    let nodes = new Array(graph.length);
+    for(const node of graph) {
+      if(node.parent !== undefined) {
+        nodes[node.id] = new NodeTree(node.id, node.parent.id, node.text);
+        nodes[node.parent.id].children.push(node.id);
+      }else {
+        nodes[node.id] = new NodeTree(node.id, undefined, node.text);
+      }
+    }
+
+    for(const node of nodes) {
+      if(node.parent === undefined) {
+        res += this.createTree(nodes, node);
+        res += this.write(nodes, node);
+        res += "style " + node.children.length + node.id + node.children.join('') + " fill:#fff,stroke:#fff,stroke-width:4px,color:#fff\n";
+      }
+    }
+    return res;
+  }
+
+  public createTree(nodes: NodeTree[], node: NodeTree): string {
+    let res = 'subgraph ' + node.children.length + node.id + node.children.join('') + '\n';
+    const text = node.text === Grammar.EPSILON ? 'ε' : node.text;
+    res += node.id + '("' + text + '")\n';
+    for(const child of node.children) {
+      res += this.createTree(nodes, nodes[child]);
+    }
+    res += 'end\n';
+    return res;
+  }
+
+  public write(nodes: NodeTree[], node: NodeTree): string {
+    let res = '';
+    for(const child of node.children) {
+      res += node.id + '-->' + nodes[child].id +'\n';
+      
+      res += "style " + nodes[child].children.length + nodes[child].id + nodes[child].children.join('') + " fill:#fff,stroke:#fff,stroke-width:4px,color:#fff\n";
+      res += this.write(nodes, nodes[child]);
+    }
+    return res;
+  }
+}
+
+class NodeTree {
+  id: number;
+  parent: number;
+  children: number[] = [];
+  text: string;
+  constructor(id: number, parent: number, text: string) {
+    this.id = id; 
+    this.parent = parent;
+    this.text = text;
   }
 }
 

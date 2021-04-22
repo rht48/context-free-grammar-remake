@@ -1,4 +1,4 @@
-<div class="container">
+<div class="container-fluid">
     <tabset>
         <tab heading="Tables" id="tab1">
             <accordion [isAnimated]="true" class="mt-3">
@@ -36,7 +36,23 @@
                 </accordion-group>
             </accordion>
         </tab>
-        <tab heading="Testing">Testing</tab>
+        <tab heading="Testing">
+            <div class="container">
+                <div class="row justify-content-center mb-5 mt-5">
+                    <h5><i><b>{{ inputString }}</b></i></h5>
+                </div>
+                <div class="row justify-content-center mb-5">
+                    <textarea class="form-control col-10" (input)="parse($event.target.value)"></textarea>
+                    <button class="btn btn-success col-2" (click)="verify()">Verify</button>
+                </div>
+                
+            </div>
+            <div class="container-fluid">
+                <div class="row justify-content-center mt-5">
+                    <app-tree [graph]="tree"></app-tree>
+                </div>
+            </div>
+        </tab>
     </tabset>
 </div>
   

@@ -77,6 +77,17 @@ export class Grammar {
         return this.nonTerminals.indexOf(term) >= 0;
     }
 
+    public getRuleById(id: number): Production {
+        for(const nt of Object.keys(this.rules)) {
+            for(const prod of this.rules[nt]) {
+                if(prod.getId() === id) {
+                    return prod;
+                }
+            }
+        }
+        return new Production(0, []);
+    }
+
 }
 
 
