@@ -37,6 +37,10 @@ export class CalcLlService {
     return this.firstTable;
   }
 
+  public getPredictionTable(): {} {
+    return this.predictionTable;
+  }
+
   public getFollowTable(): {} {
     return this.followTable;
   }
@@ -189,14 +193,34 @@ export class CalcLlService {
         for(const nonterminal of grammar.getNonTerminals()) {
           for(const production of grammar.getRulesOf(nonterminal)) {
             const terms = production.getTerms();
+            let i = 0;
             for(const term of terms) {
+              // Test if the current term is equal to the term in the rule
+              // If so, we can then calculate the follow terms
               if(term === nt) {
+                // Get the first elements of the rest of the rule
+                const beta = terms.slice(i + 1);
+                const betaFirsts = this.firstsArray(beta);
+                
+                // Add all firsts to the table
+                for(const bf of betaFirsts) {
+                  this.add(this.followTable[nt][index + 1], bf);
+                }
 
+                // Test if the rest is nullable, if so, we need to check the follow of the nonterminal of the current rule
+                if(this.nullable(beta)) {
+                  const followNonTerminal = this.followTable[nonterminal][index];
+
+                  // Insert the follow in the table
+                  for(const fnt of followNonTerminal) {
+                    this.add(this.followTable[nt][index + 1], fnt);
+                  }
+                }
               }
+              i++;
             }
           }
         }
-        
       }
       index ++;
     } while(this.hasChanged(this.followTable) && index < 100);
@@ -208,9 +232,35 @@ export class CalcLlService {
   }
 
   private calculatePredict(grammar: Grammar): void {
+    this.predictionTable = {};
+    const nonTerminals = grammar.getNonTerminals();
+    let terms = grammar.getTerms();
+    terms.push(Grammar.EOF);
 
+    for(const term of terms) {
+      this.predictionTable[term] = {};
+      for(const nonTerminal of nonTerminals) {
+        // Initialize empty array
+        this.predictionTable[term][nonTerminal] = [];
+
+        const rules = grammar.getRulesOf(nonTerminal);
+
+        for(const rule of rules) {
+          // Check that the term is in the firsts or in the follows if the terms can be null
+          // If so, add the term to the array
+          const betaFirsts = this.firstsArray(rule.getTerms());
+          if(betaFirsts.indexOf(term) >= 0 || (this.nullable(rule.getTerms()) && this.follows[nonTerminal].indexOf(term) >= 0)) {
+            this.add(this.predictionTable[term][nonTerminal], rule.getId());
+          }
+        }
+      }
+    }
   }
 
+  /**
+   * Tests if the last line changed from the before last line
+   * @param table 
+   */
   private hasChanged(table: {}): boolean {
     const keys = Object.keys(table);
     if(keys.length <= 0) {
@@ -250,29 +300,44 @@ export class CalcLlService {
     if(terms.length === 0) {
       return true;
     }
+    if(terms.length === 1 && terms[0] === Grammar.EPSILON) {
+      return true;
+    }
     if(this.nulls[terms[0]] === 1) {
       return this.nullable(terms.slice(1));
     }
     return false;
   }
 
+  /**
+   * Gets all the firsts terms from a list of terms
+   * @param terms 
+   */
   private firstsArray(terms: string[]) {
     if(terms.length === 0) {
       return [];
     }
     const ft = terms[0];
     const rt = terms.slice(1);
-    const first = this.firsts[ft];
-    let rest = [];
-    if(this.nullable(rt)) {
-      rest = this.firstsArray(rt);
+    
+    let first = [];
+    let res = [];
+    if(ft !== Grammar.EPSILON) {
+      if(Object.keys(this.firsts).indexOf(ft) < 0) {
+        first = [ft];
+      }else {
+        first = this.firsts[ft];
+        if(this.nulls[ft] === 1) {
+          res = this.firstsArray(rt);
+        }
+      }
     }
 
     for(const elem of first) {
-      this.add(rest, elem);
+      this.add(res, elem);
     }
 
-    return rest;
+    return res;
   }
 }
 

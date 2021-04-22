@@ -27,6 +27,15 @@ export class NumberStrategy implements Strategy {
     }
 }
 
+export class NumberArrayStrategy implements Strategy {
+    toString(array): string {
+        if(array.length === 0) {
+            return '';
+        }
+        return array.join(' | ')
+    }
+}
+
 export class Strategies {
     public static DEFAULT = new DefaultStrategy();
     public static ARRAY = new ArrayStrategy();

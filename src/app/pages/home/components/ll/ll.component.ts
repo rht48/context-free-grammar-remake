@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ArrayStrategy, NumberStrategy } from 'src/app/models/strategies/strategy';
+import { ArrayStrategy, NumberArrayStrategy, NumberStrategy } from 'src/app/models/strategies/strategy';
 import { CalcLlService } from '../../services/calc-ll.service';
 
 @Component({
@@ -20,6 +20,10 @@ export class LlComponent implements OnInit {
 
   getNumberStrategy() {
     return new NumberStrategy();
+  }
+
+  getNumberArrayStrategy() {
+    return new NumberArrayStrategy();
   }
 
 }
