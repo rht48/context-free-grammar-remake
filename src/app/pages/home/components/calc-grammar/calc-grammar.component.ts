@@ -17,6 +17,7 @@ export class CalcGrammarComponent implements OnInit {
   public state = 0;
 
   public graph = '';
+  public parserTable = {};
 
   constructor(public calcLlService: CalcLlService,
               public calcLrService: CalcLrService) { }
@@ -33,6 +34,7 @@ export class CalcGrammarComponent implements OnInit {
     this.calcLlService.calculateLL(this.grammar);
     this.calcLrService.calculateLr(this.grammar);
     this.graph = this.calcLrService.getAutomatonString();
+    this.parserTable = this.calcLrService.getParserTable();
   }
 
 }

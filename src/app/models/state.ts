@@ -23,28 +23,27 @@ export class State {
 
     public equals(state: State): boolean {
 
-        if(this.id === 3) console.log(state);
         if(this.rules.length !== state.rules.length) {
             return false;
         }
-        if(this.id === 3) console.log("2");
         for(let i = 0; i < this.rules.length; i++) {
             if(!this.rules[i].equals(state.rules[i])) {
                 return false;
             }
         }
-        if(this.id === 3) console.log("3");
         return true;
     }
 }
 
 export class Rule {
+    id: number;
     nonTerminal: string;
     terms: string[] = [];
     follows: string[] = [];
     pointer: number = 0;
 
-    constructor(nonTerminal: string, terms: string[]) {
+    constructor(id: number, nonTerminal: string, terms: string[]) {
+        this.id = id;
         this.nonTerminal = nonTerminal;
         this.terms = terms;
     }

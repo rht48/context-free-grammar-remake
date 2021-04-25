@@ -20,6 +20,7 @@ import { NumberedRulesComponent } from './components/numbered-rules/numbered-rul
 import { LlComponent } from './components/ll/ll.component';
 import { LrComponent } from './components/lr/lr.component';
 import { StatesComponent } from './components/states/states.component';
+import { InteractiveTableComponent } from './components/interactive-table/interactive-table.component';
 
 @NgModule({
   imports: [
@@ -45,7 +46,8 @@ import { StatesComponent } from './components/states/states.component';
     NumberedRulesComponent,
     LlComponent,
     LrComponent,
-    StatesComponent
+    StatesComponent,
+    InteractiveTableComponent
   ]
 })
 export class HomeModule {

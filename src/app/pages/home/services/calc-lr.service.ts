@@ -3,6 +3,7 @@ import { Grammar, Production } from 'src/app/models/grammar';
 import { Rule, State } from 'src/app/models/state';
 import * as _ from 'lodash';
 import { CalcLlService } from './calc-ll.service';
+import { findReadVarNames } from '@angular/compiler/src/output/output_ast';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +13,15 @@ export class CalcLrService {
   private grammar: Grammar;
   private automaton: State[] = []
 
+  // Syntax for parser table: {state: number (id of the state), {term: string, action: string[]}}
+  private parserTable = {};
+
   constructor(private calcLlService: CalcLlService) { }
 
   public calculateLr(grammar: Grammar): void {
     const newGrammar = this.checkGrammar(grammar);
     this.calculateAutomaton(newGrammar);
+    this.calculateParserTable(newGrammar);
     this.grammar = newGrammar;
   }
 
@@ -62,7 +67,9 @@ export class CalcLrService {
     // Define the entry state and apply closure to it
     const entryState = new State(id++, undefined);
     const entryTerm = grammar.getEntryPoint();
-    let rule = new Rule(entryTerm, grammar.getRulesOf(entryTerm)[0].getTerms());
+    const productions = grammar.getRulesOf(entryTerm);
+    const production = productions[0];
+    let rule = new Rule(production.getId(), entryTerm, production.getTerms());
     rule.addFollow(Grammar.EOF);
     entryState.addRule(rule);
 
@@ -107,7 +114,6 @@ export class CalcLrService {
         }
       }
     }
-    console.log(this.automaton);
   }
 
   /**
@@ -134,7 +140,7 @@ export class CalcLrService {
         
         // Get all the productions associated with the non terminals
         for(const production of grammar.getRulesOf(term)) {
-          const rule = new Rule(term, production.getTerms());
+          const rule = new Rule(production.getId(), term, production.getTerms());
           
           // Add all the firsts to the follow
           for(const t of firsts) {
@@ -202,6 +208,45 @@ export class CalcLrService {
       }
     }
     return res;
+  }
+
+  public calculateParserTable(grammar: Grammar): void {
+    this.parserTable = {};
+
+    for(const state of this.automaton) {
+      this.parserTable[state.id] = {};
+      for(const term of grammar.getTerms()) {
+        this.parserTable[state.id][term] = [];
+      }
+      this.parserTable[state.id][Grammar.EOF] = [];
+      for(const term of grammar.getNonTerminals()) {
+        this.parserTable[state.id][term] = [];
+      }
+
+      for(const child of state.children) {
+        if(grammar.isNonTerminal(child.transition)) {
+          this.parserTable[state.id][child.transition].push(child.child.id);
+        }else {
+          this.parserTable[state.id][child.transition].push(`s${child.child.id}`);
+        }
+      }
+
+      for(const rule of state.rules) {
+        if(rule.pointer >= rule.terms.length || (rule.pointer === 0 && rule.terms.length === 1 && rule.terms[0] === Grammar.EPSILON)) {
+          for(const follow of rule.follows) {
+            if(follow === Grammar.EOF && rule.nonTerminal === grammar.getEntryPoint()) {
+              this.parserTable[state.id][follow].push(`acc`);
+            }else {
+              this.parserTable[state.id][follow].push(`r${rule.id}`);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  public getParserTable(): {} {
+    return this.parserTable;
   }
 
   /**

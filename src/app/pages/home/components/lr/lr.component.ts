@@ -11,6 +11,9 @@ export class LrComponent implements OnInit {
   @Input()
   graph = 'stateDiagram-v2;';
 
+  @Input()
+  parserTable = {};
+
   constructor(public calcLrService: CalcLrService) { }
   
  
