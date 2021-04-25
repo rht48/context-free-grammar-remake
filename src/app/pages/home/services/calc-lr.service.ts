@@ -211,9 +211,13 @@ export class CalcLrService {
   }
 
   public calculateParserTable(grammar: Grammar): void {
+    // Reset the table
     this.parserTable = {};
 
+    // Loop on every state
     for(const state of this.automaton) {
+
+      // Initialise the table (row)
       this.parserTable[state.id] = {};
       for(const term of grammar.getTerms()) {
         this.parserTable[state.id][term] = [];
@@ -223,6 +227,9 @@ export class CalcLrService {
         this.parserTable[state.id][term] = [];
       }
 
+      // Here we loop on every transition
+      // If the transition is a non terminal, then we goto that state
+      // Else we shift to the state
       for(const child of state.children) {
         if(grammar.isNonTerminal(child.transition)) {
           this.parserTable[state.id][child.transition].push(child.child.id);
@@ -231,6 +238,10 @@ export class CalcLrService {
         }
       }
 
+      // Here we handle the reduce
+      // Loop on  each rule of the state and test if the pointer is out of bounds (or we have epsilon)
+      // If so, for each follow, we add a reduce for that rule
+      // Acceptiong states are that we have EOF and the non terminal is the entry point
       for(const rule of state.rules) {
         if(rule.pointer >= rule.terms.length || (rule.pointer === 0 && rule.terms.length === 1 && rule.terms[0] === Grammar.EPSILON)) {
           for(const follow of rule.follows) {
