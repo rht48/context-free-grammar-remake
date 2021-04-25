@@ -50,9 +50,16 @@ export class CalcLrService {
     return g;
   }
 
+  /**
+   * Calculate the automaton lr1
+   * @param grammar 
+   */
   private calculateAutomaton(grammar: Grammar): void {
+    // Reset the automaton
     this.automaton = [];
     let id = 0;
+
+    // Define the entry state and apply closure to it
     const entryState = new State(id++, undefined);
     const entryTerm = grammar.getEntryPoint();
     let rule = new Rule(entryTerm, grammar.getRulesOf(entryTerm)[0].getTerms());
@@ -62,26 +69,32 @@ export class CalcLrService {
     this.closure(grammar, entryState);
     this.mergeRules(entryState);
 
+    // Init the stack and loop until the stack is empty, here we have fifo
     let stack: State[] = [entryState];
-    
     while(stack.length > 0) {
+      // Get the current state, push it to the automaton and get the transitions
       const state = stack.shift();
       this.automaton.push(state);
       const transitions = this.getTransitions(state);
 
+      // For each transition, we create a new state based off the transition (and the rules affected by the transition)
       for(const transition of transitions) {
         const rules = state.getRulesContaining(transition);
         const newState = new State(id++, state);
         const clonedRules: Rule[] = _.cloneDeep(rules);
 
+        // Advance the pointer by 1
         for(let r of clonedRules) {
           r.nextPointer();
           newState.addRule(r);
         }
 
+        // Apply closure
         this.closure(grammar, newState);
         this.mergeRules(newState);
 
+        // Check if the state is currently present, if not, add it to the stack and bind the parent/child
+        // Else just do the binding
         const identState = this.automaton.filter(s => newState.equals(s));
         if(identState.length === 0) {
           const child = newState;
@@ -144,10 +157,18 @@ export class CalcLrService {
     }
   }
 
+  /**
+   * Merges rules together (for the follow)
+   * @param state 
+   */
   private mergeRules(state: State): void {
     let newRules: Rule[] = [];
     let visitedIndex: number[] = [];
     
+    // Pretty simple
+    // For each rule, check if there are other similar rules
+    // If there is a similar rule then append the follows to the base rule
+    // Mark both rules as visited so that we don't redo the calculations later
     for(let i = 0; i < state.rules.length; i++) {
       if(visitedIndex.indexOf(i) < 0) {
         const rule = state.rules[i];
@@ -168,6 +189,10 @@ export class CalcLrService {
     state.rules = newRules;
   }
 
+  /**
+   * Get the outgoing transitions of a state
+   * @param state 
+   */
   private getTransitions(state: State): string[] {
     let res: string[] = [];
     for(const rule of state.rules) {
@@ -179,7 +204,12 @@ export class CalcLrService {
     return res;
   }
 
+  /**
+   * Transforms the automaton into mermaid like syntax
+   */
   public getAutomatonString(): string {
+
+    // I don't want to bother explainign what this does, it just works
     let res = 'stateDiagram-v2';
     for(const state of this.automaton) {
       res += `\ns${state.id}: S${state.id}`;
