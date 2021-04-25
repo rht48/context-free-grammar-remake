@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Grammar } from 'src/app/models/grammar';
 import { CalcLlService } from '../../services/calc-ll.service';
+import { CalcLrService } from '../../services/calc-lr.service';
 
 
 @Component({
@@ -15,7 +16,10 @@ export class CalcGrammarComponent implements OnInit {
 
   public state = 0;
 
-  constructor(public calcLlService: CalcLlService) { }
+  public graph = '';
+
+  constructor(public calcLlService: CalcLlService,
+              public calcLrService: CalcLrService) { }
 
   ngOnInit(): void {}
 
@@ -26,7 +30,9 @@ export class CalcGrammarComponent implements OnInit {
 
   public calculateLR(): void {
     this.state = 2;
+    this.calcLlService.calculateLL(this.grammar);
+    this.calcLrService.calculateLr(this.grammar);
+    this.graph = this.calcLrService.getAutomatonString();
   }
-
 
 }

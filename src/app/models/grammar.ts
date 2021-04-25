@@ -56,6 +56,10 @@ export class Grammar {
         return this.entryPoint;
     }
 
+    public setEntryPoint(entry: string): void {
+        this.entryPoint = entry;
+    }
+
     public setRules(rules, entryPoint) {
         this.rules = rules;
         this.entryPoint = entryPoint;
@@ -63,6 +67,11 @@ export class Grammar {
         this.nonTerminals = [];
         this.calculateNonTerminals();
         this.calculateTerms();
+    }
+
+    public addRule(nonTerminal: string, productions: Production[]) {
+        this.rules[nonTerminal] = productions;
+        this.nonTerminals.push(nonTerminal);
     }
 
     public epsilon(): string {

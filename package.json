@@ -20,6 +20,7 @@
     "@angular/platform-browser-dynamic": "~11.2.3",
     "@angular/router": "~11.2.3",
     "bootstrap": "^4.6.0",
+    "lodash": "^4.17.21",
     "mermaid": "^8.9.1",
     "ngx-bootstrap": "^6.2.0",
     "rxjs": "~6.6.0",

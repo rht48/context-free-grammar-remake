@@ -302,7 +302,7 @@ export class CalcLlService {
    * Tests if a stream of terms can be null
    * @param terms 
    */
-  private nullable(terms: string[]): boolean {
+  public nullable(terms: string[]): boolean {
     if(terms.length === 0) {
       return true;
     }
@@ -319,7 +319,7 @@ export class CalcLlService {
    * Gets all the firsts terms from a list of terms
    * @param terms 
    */
-  private firstsArray(terms: string[]) {
+  public firstsArray(terms: string[]): string[] {
     if(terms.length === 0) {
       return [];
     }

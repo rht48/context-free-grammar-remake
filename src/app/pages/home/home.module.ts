@@ -19,6 +19,7 @@ import { RulesComponent } from './components/rules/rules.component';
 import { NumberedRulesComponent } from './components/numbered-rules/numbered-rules.component';
 import { LlComponent } from './components/ll/ll.component';
 import { LrComponent } from './components/lr/lr.component';
+import { StatesComponent } from './components/states/states.component';
 
 @NgModule({
   imports: [
@@ -43,7 +44,8 @@ import { LrComponent } from './components/lr/lr.component';
     RulesComponent,
     NumberedRulesComponent,
     LlComponent,
-    LrComponent
+    LrComponent,
+    StatesComponent
   ]
 })
 export class HomeModule {
