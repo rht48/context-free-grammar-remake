@@ -97,6 +97,17 @@ export class Grammar {
         return new Production(0, []);
     }
 
+    public getNonTerminalOfRuleId(id: number): string {
+        for(const nt of this.nonTerminals) {
+            for(const prod of this.rules[nt]) {
+                if(prod.id === id) {
+                    return nt;
+                }
+            }
+        }
+        return "";
+    }
+
 }
 
 

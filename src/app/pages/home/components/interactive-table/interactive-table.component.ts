@@ -1,5 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { NumberArrayStrategy } from 'src/app/models/strategies/strategy';
+import { CalcLrService } from '../../services/calc-lr.service';
 
 @Component({
   selector: 'app-interactive-table',
@@ -13,7 +14,7 @@ export class InteractiveTableComponent implements OnInit {
   
   public strategy = new NumberArrayStrategy();
 
-  constructor() { }
+  constructor(private calcLrService: CalcLrService) { }
 
   ngOnInit(): void {
   }
@@ -28,6 +29,28 @@ export class InteractiveTableComponent implements OnInit {
 
   public rows(): string[] {
     return Object.keys(this.parserTable);
+  }
+
+  public getInnerHTML(row: string, col: string): string {
+    const actions = this.parserTable[row][col];
+    if(actions.length === 1) {
+      return `${this.parserTable[row][col]}`;
+    }else {
+      let res = '';
+      for(const action of actions) {
+        res += `<div>
+                  <input type="radio" name="flexRadioDefault-${row}-${col}" id="flexRadioDefault-${row}-${col}">
+                  <label for="flexRadioDefault-${row}-${col}">
+                    ${action}
+                  </label>
+                </div>`;
+      }
+      return res;
+    }
+  }
+
+  public changeAction(row: string, col: string, action: string): void {
+    this.calcLrService.setAction(+row, col, action);
   }
 
 }

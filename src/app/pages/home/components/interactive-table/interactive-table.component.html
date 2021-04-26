@@ -8,7 +8,31 @@
     <tbody>
         <tr *ngFor="let row of rows()">
             <th score="row">{{ row }}</th>
-            <td *ngFor="let column of columns()" [innerHTML]="strategy.toString(parserTable[row][column])"></td>
+            <!-- <td *ngFor="let column of columns()" [innerHTML]="strategy.toString(parserTable[row][column])"></td> -->
+            <td *ngFor="let column of columns()">
+                <div *ngIf="parserTable[row][column].length === 1; then normal else radio"></div>
+                <ng-template #normal>{{ parserTable[row][column] }}</ng-template>
+                <ng-template #radio>
+                    <div class="form-check" *ngFor="let action of parserTable[row][column]; let isFirst = first">
+                        <input *ngIf="isFirst" 
+                                class="form-check-input" 
+                                type="radio" 
+                                name="{{ 'flexRadioDefault-' + row + '-' + column }}" 
+                                id="{{ 'flexRadioDefault-' + row + '-' + column }}"
+                                (change)="changeAction(row, column, action)"
+                                checked>
+                        <input *ngIf="!isFirst" 
+                                class="form-check-input" 
+                                type="radio" 
+                                name="{{ 'flexRadioDefault-' + row + '-' + column }}" 
+                                id="{{ 'flexRadioDefault-' + row + '-' + column }}"
+                                (change)="changeAction(row, column, action)">
+                        <label class="form-check-label" for="{{ 'flexRadioDefault-' + row + '-' + column }}">
+                            {{ action }}
+                        </label>
+                    </div>
+                </ng-template>
+            </td>
         </tr>
     </tbody>
 </table>

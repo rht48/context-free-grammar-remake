@@ -4,6 +4,7 @@ import { Rule, State } from 'src/app/models/state';
 import * as _ from 'lodash';
 import { CalcLlService } from './calc-ll.service';
 import { findReadVarNames } from '@angular/compiler/src/output/output_ast';
+import { ActivatedRouteSnapshot } from '@angular/router';
 
 @Injectable({
   providedIn: 'root'
@@ -15,6 +16,10 @@ export class CalcLrService {
 
   // Syntax for parser table: {state: number (id of the state), {term: string, action: string[]}}
   private parserTable = {};
+
+  // Action to do if there are multiple values
+  // Syntax : {state: number (ide if the state), {term: string, action: string}}
+  private action = {}
 
   constructor(private calcLlService: CalcLlService) { }
 
@@ -256,6 +261,11 @@ export class CalcLrService {
     }
   }
 
+  public setAction(row: number, column: string, action: string): void {
+    this.action[row] = {};
+    this.action[row][column] = action;
+  }
+
   public getParserTable(): {} {
     return this.parserTable;
   }
@@ -289,6 +299,88 @@ export class CalcLrService {
     for(const state of this.automaton) {
       for(const link of state.children) {
         res += `\ns${state.id} --> s${link.child.id}: ${link.transition}`;
+      }
+    }
+    return res;
+  }
+
+  public verify(input: string[]): {} {
+    let res = {};
+    res["Step"] = [];
+    res["Stack"] = [];
+    res["Input"] = [];
+    res["Action"] = [];
+
+    let stepNumber = 1;
+    let stack: any[] = [0];
+    let strings = _.cloneDeep(input);
+    let finished = false;
+    
+    while(!finished) {
+      res["Step"].push(stepNumber++);
+      res["Stack"].push(stack);
+      res["Input"].push(strings);
+
+      stack = _.cloneDeep(stack);
+      strings = _.cloneDeep(strings);
+
+      const finalElement = stack[stack.length - 1];
+      const firstInput = strings[0];
+      if(typeof finalElement === 'number') {
+        const actions = this.parserTable[finalElement][firstInput];
+        let action: string;
+
+        if(actions.length === 0) {
+          res["Action"].push(`No action found for ${finalElement}, ${firstInput}`);
+          return res;
+        }else if(actions.length === 1) {
+          action = actions[0];
+        }else {
+          if(this.action[finalElement] !== undefined) {
+            action = this.action[finalElement][firstInput];
+          }else {
+            action = actions[0];
+          }
+        }
+
+        res["Action"].push(action);
+        if(action === "acc") {
+          finished = true;
+          return res;
+        }else if(action.startsWith('s')) {
+          const stateNumber = +action.substring(1);
+          stack.push(firstInput);
+          stack.push(stateNumber);
+          strings.shift();
+        }else if(action.startsWith('r')) {
+          const ruleId = +action.substring(1);
+          const production = this.grammar.getRuleById(ruleId);
+          const nonTerminal = this.grammar.getNonTerminalOfRuleId(ruleId);
+          const terms = production.getTerms();
+          
+          if(terms.length >= 1 && terms[0] !== Grammar.EPSILON) {
+            let pointer = terms.length - 1;
+            while(pointer >= 0) {
+              const last = stack.pop();
+              if(last === terms[pointer]) {
+                pointer --;
+              }
+            }
+          }
+
+          stack.push(nonTerminal);
+        }
+      }else {
+        const secondToLast = stack[stack.length - 2];
+        const actions = this.parserTable[secondToLast][finalElement];
+        if(actions.length === 0) {
+          res["Action"].push(`No action found for ${secondToLast}, ${finalElement}`);
+          return res;
+        }else {
+          const action = actions[0];
+          res["Action"].push(action);
+          stack.push(action);
+        }
       }
     }
     return res;
