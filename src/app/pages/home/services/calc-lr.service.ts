@@ -370,7 +370,7 @@ export class CalcLrService {
         // What to do based on the actions
         // If we have accept, then we can stop here
         // If the action is shift, then we add the input and the state number to the stack and delete the first element of the input
-        // If the action is reduct, delete all the terms from the rule number and replace it with the non terminal
+        // If the action is reduction, delete all the terms from the rule number and replace it with the non terminal
         if(action === "acc") {
           finished = true;
           return res;
