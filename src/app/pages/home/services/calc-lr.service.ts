@@ -30,6 +30,11 @@ export class CalcLrService {
     this.grammar = newGrammar;
   }
 
+  /**
+   * Checks the grammar
+   * Adds another rule if there are multiple rules for the entry and deletes all EOF of those rules
+   * @param grammar 
+   */
   private checkGrammar(grammar: Grammar): Grammar {
     let g: Grammar = _.cloneDeep(grammar);
     const entry = g.getEntryPoint();
@@ -304,32 +309,48 @@ export class CalcLrService {
     return res;
   }
 
+  /**
+   * Verifies an input based on the parser table
+   * @param input 
+   */
   public verify(input: string[]): {} {
+    // Initialize the result table
     let res = {};
     res["Step"] = [];
     res["Stack"] = [];
     res["Input"] = [];
     res["Action"] = [];
 
+    // Initial condictions
     let stepNumber = 1;
     let stack: any[] = [0];
     let strings = _.cloneDeep(input);
     let finished = false;
     
+    // While we are not finished, continue looping
     while(!finished) {
+      // Push the current state into the res table
       res["Step"].push(stepNumber++);
       res["Stack"].push(stack);
       res["Input"].push(strings);
 
+      // Deep clone arrays, yay for referencing !
       stack = _.cloneDeep(stack);
       strings = _.cloneDeep(strings);
 
+      // Get the last element of the stack and the first element of the input
       const finalElement = stack[stack.length - 1];
       const firstInput = strings[0];
+
+      // Check if we have a number
+      // If so, that means that we are in a state, we can either shift, reduce or accept based on the input
       if(typeof finalElement === 'number') {
         const actions = this.parserTable[finalElement][firstInput];
         let action: string;
 
+        // If we have no action associated with the pair (state, input), then that means that the input isn't recognized by the language
+        // If we have only one action, the action is that action
+        // If we have multiple actions, we need to check with what the user has inputed in the interactive table
         if(actions.length === 0) {
           res["Action"].push(`No action found for ${finalElement}, ${firstInput}`);
           return res;
@@ -343,7 +364,13 @@ export class CalcLrService {
           }
         }
 
+        // Push the action in the table
         res["Action"].push(action);
+
+        // What to do based on the actions
+        // If we have accept, then we can stop here
+        // If the action is shift, then we add the input and the state number to the stack and delete the first element of the input
+        // If the action is reduct, delete all the terms from the rule number and replace it with the non terminal
         if(action === "acc") {
           finished = true;
           return res;
@@ -370,6 +397,9 @@ export class CalcLrService {
 
           stack.push(nonTerminal);
         }
+
+      // If the element of the stack isn't a number, then we are transitioning
+      // We need to check the second to last element of the stack to know where we will land
       }else {
         const secondToLast = stack[stack.length - 2];
         const actions = this.parserTable[secondToLast][finalElement];
