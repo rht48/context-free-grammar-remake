@@ -28,6 +28,7 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 
 ## Examples of rules
 
+```
 ll(1)
 S -> A B C
 A -> a | D
@@ -48,3 +49,4 @@ S -> E $
 E -> E + E
 E -> E * E
 E -> id
+```
